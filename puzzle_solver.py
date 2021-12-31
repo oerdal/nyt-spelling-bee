@@ -1,28 +1,43 @@
 import json
 
-
 def main():
     data = None
 
-    with open('words_dictionary.json') as f:
+    file_name = 'words_dictionary.json'
+
+    print(f'> LOADING "{file_name}" <')
+    with open(file_name) as f:
         data = json.load(f)
-        # print(data)
 
     if data:
         parsed_dict = parse_dict(data)
-        # print(any_words_shorter_than_k(parsed_dict, 4))
         ppd = preprocess_dict(parsed_dict)
-        # print(ppd)
+        print(f'> DICTIONARY LOADED <')
 
-        print('Enter your letters: ')
-        letters = input()
+        print('\nEnter your letters - Special letter must be entered first: ')
+        letters = input().upper()
+        print(f'\n> GENERATING WORDS FOR {show_letters(letters)} <')
         ppd2 = postprocess_dict(ppd, letters)
         word_list = ([v for _, vs in ppd2.items() for v in vs])
         word_list = sorted(word_list)
-        print(word_list)
 
+        print('\nPossible Solutions: ')
+        print(word_list)
+    
+    else:
+        print(f'> ERROR! "{file_name}" NOT LOADED <')
+
+
+# tests whether any words in data are shorter than k letters long
+# -- returns true iff at least one word in data is longer than k letters
+# -- returns false otherwise
 def any_words_shorter_than_k(data, k):
     return any([len(w) < k for w in data])
+
+
+def show_letters(letters):
+    s = f'[{letters[0]}] {" ".join(sorted(letters[1:]))}'
+    return s
 
 def parse_dict(data):
     parsed = [k for k in data.keys() if len(k) >= 4]
@@ -48,8 +63,7 @@ def postprocess_dict(data, letters):
     return word_set
 
 def normalize_word(w):
-    w = w.lower()
-    w_norm = sorted(w)
+    w_norm = sorted(w.upper())
     return ''.join(w_norm)
 
 if __name__ == '__main__':
